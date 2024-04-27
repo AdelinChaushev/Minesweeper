@@ -105,7 +105,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        if len(self.cells) ==self.count :
+        if len(self.cells) == self.count :
             return self.cells
         return set()
 
@@ -214,26 +214,35 @@ class MinesweeperAI():
                if they can be inferred from existing knowledge
         """
         self.moves_made.add(cell)
-        self.safes.add(cell)
+        self.mark_safe(cell)
    
         neighbors = set()
         newCount = 0
         for i in range(cell[0] - 1, cell[0] + 2):
             for j in range(cell[1] - 1, cell[1] + 2):       
-                if (i, j) == cell:
-                    continue
-              
-                if 0 <= i < self.height and 0 <= j < self.width:
-                    if (i,j) not in self.safes and (i,j)  not in self.mines and (i,j) not in self.moves_made: 
-                     neighbors.add((i,j))
+             if (i,j) in    self.mines:
+                 newCount+= 1   
+                 continue   
+             if ( 0 <= i < self.height 
+             and 0 <= j < self.width 
+             and (i,j) != cell 
+             and (i,j) not in self.moves_made 
+             and (i,j) not in self.safes ):                  
+                      neighbors.add((i,j))
+        countAfter  = count - newCount
+            
+        
         if len(neighbors) > 0:
-         sentance  = Sentence(neighbors,count - newCount)
-         self.knowledge.append(sentance)
-         self.knowledge_helper()
+         
+          sentance  = Sentence(neighbors,countAfter )
+          self.knowledge.append(sentance)
+          self.knowledge_helper()
        
-         for sentance in self.knowledge: 
-             self.safes |= sentance.known_safes()
-             self.mines |= sentance.known_mines() 
+          for sentance in self.knowledge: 
+              self.safes |= sentance.known_safes()
+              self.mines |= sentance.known_mines() 
+        
+        
 
     def make_safe_move(self):
         """
