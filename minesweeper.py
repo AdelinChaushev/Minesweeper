@@ -166,7 +166,7 @@ class MinesweeperAI():
         self.mines.add(cell)
         for sentence in self.knowledge:
             sentence.mark_mine(cell)
-        self.knowledge_helper()    
+
 
     def mark_safe(self, cell):
         """
@@ -176,29 +176,27 @@ class MinesweeperAI():
         self.safes.add(cell)
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
-        self.knowledge_helper()    
+
 
     def knowledge_helper(self) :
-       
-              while True:
-                 breaker = True
-                 for s1 in self.knowledge:
-                     for s2 in self.knowledge:
-                         if len(s1.cells) != 0 and len(s2.cells) != 0:
-                             if s1.cells < s2.cells:
-                                 cells = s2.cells.copy()
-                                 s2.cells -=  s1.cells
-                                 s2.count -= s1.count
-                                 print(f"infer {s2.cells} from {s1.cells} and {cells}")
-                                 breaker = False
-                         else:
-                             if s1 in self.knowledge and len(s1.cells) == 0:
-                                 self.knowledge.remove(s1)
-                             if s2 in self.knowledge and len(s2.cells) == 0:
-                                 self.knowledge.remove(s2)                    
-                 if breaker:
-                     break
-    
+          for s1 in self.knowledge:
+              for s2 in self.knowledge:
+                  if len(s1.cells) != 0 and len(s2.cells) != 0:
+                      if s1.cells == s2.cells:
+                          continue
+                      if s1.cells.issubset(s2.cells):
+                          new_sub=  s2.cells -  s1.cells
+                          new_count =  s2.count - s1.count
+                          sentence = Sentence(new_sub, new_count)
+                          if sentence not in self.knowledge:
+                              self.knowledge.append(sentence)
+                              print(f"infer {new_sub} from {s1.cells} and {s2.cells}")
+                  else:
+                      if s1 in self.knowledge and len(s1.cells) == 0:
+                          self.knowledge.remove(s1)
+                      if s2 in self.knowledge and len(s2.cells) == 0:
+                          self.knowledge.remove(s2)
+
        
     def add_knowledge(self, cell, count):
         """
@@ -240,7 +238,7 @@ class MinesweeperAI():
           self.knowledge.append(sentance)
           self.knowledge_helper()
        
-        for sentance in self.knowledge: 
+        for sentance in self.knowledge:
             self.safes |= sentance.known_safes()
             self.mines |= sentance.known_mines() 
         
