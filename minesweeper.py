@@ -105,7 +105,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        if len(self.cells) == self.count :
+        if len(self.cells) == self.count and self.count != 0 :
             return self.cells
         return set()
 
@@ -113,7 +113,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        if(self.count == 0):
+        if self.count == 0:
             return self.cells
         return set()
         
@@ -186,8 +186,10 @@ class MinesweeperAI():
                      for s2 in self.knowledge:
                          if len(s1.cells) != 0 and len(s2.cells) != 0:
                              if s1.cells < s2.cells:
-                                 s2.cells -= s1.cells
+                                 cells = s2.cells.copy()
+                                 s2.cells -=  s1.cells
                                  s2.count -= s1.count
+                                 print(f"infer {s2.cells} from {s1.cells} and {cells}")
                                  breaker = False
                          else:
                              if s1 in self.knowledge and len(s1.cells) == 0:
@@ -257,6 +259,7 @@ class MinesweeperAI():
             for cell in sentance.cells:
                 if  cell in self.safes  and all(move != cell  for move in self.moves_made):
                     return cell
+                
 
     def make_random_move(self):
         """
@@ -267,6 +270,8 @@ class MinesweeperAI():
             a
         """
         while True:
+         if(len(self.moves_made) == 56):
+             return None
          i = random.randrange(8)
          j = random.randrange(8)
          if all(move != (i,j)  for move in self.moves_made) and  all(move != (i,j)  for move in self.mines) :
