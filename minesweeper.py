@@ -218,7 +218,6 @@ class MinesweeperAI():
         neighbors = set()
         newCount = 0
         for i in range(cell[0] - 1, cell[0] + 2):
-
             for j in range(cell[1] - 1, cell[1] + 2):       
              if (i,j) in    self.mines:
                  newCount+= 1   
@@ -238,30 +237,9 @@ class MinesweeperAI():
           self.knowledge.append(sentance)
           self.knowledge_helper()
        
-
-            for j in range(cell[1] - 1, cell[1] + 2):
-             if (i,j) in    self.mines:
-                 newCount+= 1
-                 continue
-             if ( 0 <= i < self.height
-             and 0 <= j < self.width
-             and (i,j) != cell
-             and (i,j) not in self.moves_made
-             and (i,j) not in self.safes ):
-                      neighbors.add((i,j))
-        countAfter  = count - newCount
-
-
         for sentance in self.knowledge:
-            for move in sentance.known_safes().copy():
-                self.mark_safe(move)
-            for mine in sentance.known_mines().copy():
-                self.mark_mine(mine)
-        if len(neighbors) > 0:
-
-          sentance  = Sentence(neighbors,countAfter )
-          self.knowledge.append(sentance)
-          self.knowledge_helper()
+            self.safes |= sentance.known_safes()
+            self.mines |= sentance.known_mines()
 
 
         """
