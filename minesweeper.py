@@ -202,7 +202,6 @@ class MinesweeperAI():
         """
         Called when the Minesweeper board tells us, for a given
         safe cell, how many neighboring cells have mines in them.
-
         This function should:
             1) mark the cell as a move that has been made
             2) mark the cell as safe
@@ -215,10 +214,31 @@ class MinesweeperAI():
         """
         self.moves_made.add(cell)
         self.mark_safe(cell)
-
+   
         neighbors = set()
         newCount = 0
         for i in range(cell[0] - 1, cell[0] + 2):
+
+            for j in range(cell[1] - 1, cell[1] + 2):       
+             if (i,j) in    self.mines:
+                 newCount+= 1   
+                 continue   
+             if ( 0 <= i < self.height 
+             and 0 <= j < self.width 
+             and (i,j) != cell 
+             and (i,j) not in self.moves_made 
+             and (i,j) not in self.safes ):                  
+                      neighbors.add((i,j))
+        countAfter  = count - newCount
+            
+        
+        if len(neighbors) > 0:
+         
+          sentance  = Sentence(neighbors,countAfter )
+          self.knowledge.append(sentance)
+          self.knowledge_helper()
+       
+
             for j in range(cell[1] - 1, cell[1] + 2):
              if (i,j) in    self.mines:
                  newCount+= 1
@@ -230,6 +250,7 @@ class MinesweeperAI():
              and (i,j) not in self.safes ):
                       neighbors.add((i,j))
         countAfter  = count - newCount
+
 
         for sentance in self.knowledge:
             for move in sentance.known_safes().copy():
@@ -257,6 +278,10 @@ class MinesweeperAI():
                    5) add any new sentences to the AI's knowledge base
                       if they can be inferred from existing knowledge
                """
+
+
+
+
 
 
 
