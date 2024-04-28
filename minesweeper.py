@@ -240,9 +240,9 @@ class MinesweeperAI():
           self.knowledge.append(sentance)
           self.knowledge_helper()
        
-          for sentance in self.knowledge: 
-              self.safes |= sentance.known_safes()
-              self.mines |= sentance.known_mines() 
+        for sentance in self.knowledge: 
+            self.safes |= sentance.known_safes()
+            self.mines |= sentance.known_mines() 
         
         
 
