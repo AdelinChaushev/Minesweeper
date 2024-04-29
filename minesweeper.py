@@ -238,8 +238,10 @@ class MinesweeperAI():
           self.knowledge_helper()
        
         for sentance in self.knowledge:
-            self.safes |= sentance.known_safes()
-            self.mines |= sentance.known_mines()
+            for  symbol in  sentance.known_safes().copy():
+                self.mark_safe(symbol)
+            for  symbol in sentance.known_mines().copy():
+                self.mark_mine(symbol)
 
 
         """
@@ -274,10 +276,10 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        for sentance  in self.knowledge:
-            for cell in sentance.cells:
-                if  cell in self.safes  and all(move != cell  for move in self.moves_made):
-                    return cell
+
+        for cell in self.safes:
+           if  (cell not in self.moves_made):
+               return cell
 
 
     def make_random_move(self):
