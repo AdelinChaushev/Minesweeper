@@ -179,6 +179,7 @@ class MinesweeperAI():
 
 
     def knowledge_helper(self) :
+          changed = False
           for s1 in self.knowledge:
               for s2 in self.knowledge:
                   if len(s1.cells) != 0 and len(s2.cells) != 0:
@@ -191,6 +192,7 @@ class MinesweeperAI():
                           if sentence not in self.knowledge:
                               self.knowledge.append(sentence)
                               print(f"infer {new_sub} from {s1.cells} and {s2.cells}")
+                              changed = True
                   else:
                       if s1 in self.knowledge and len(s1.cells) == 0:
                           self.knowledge.remove(s1)
@@ -232,40 +234,23 @@ class MinesweeperAI():
             
         
         if len(neighbors) > 0:
-         
           sentance  = Sentence(neighbors,countAfter )
           self.knowledge.append(sentance)
           self.knowledge_helper()
-       
-        for sentance in self.knowledge:
-            for  symbol in  sentance.known_safes().copy():
-                self.mark_safe(symbol)
-            for  symbol in sentance.known_mines().copy():
-                self.mark_mine(symbol)
-
-
-        """
-               Called when the Minesweeper board tells us, for a given
-               safe cell, how many neighboring cells have mines in them.
-
-               This function should:
-                   1) mark the cell as a move that has been made
-                   2) mark the cell as safe
-                   3) add a new sentence to the AI's knowledge base
-                      based on the value of `cell` and `count`
-                   4) mark any additional cells as safe or as mines
-                      if it can be concluded based on the AI's knowledge base
-                   5) add any new sentences to the AI's knowledge base
-                      if they can be inferred from existing knowledge
-               """
-
-
-
-
-
-
-
-
+        breaker = True
+        while breaker:
+          for sentance in self.knowledge:
+            if sentance.known_safes():
+                 for  symbol in  sentance.known_safes().copy():
+                    self.mark_safe(symbol)
+                    breaker = True
+            if sentance.known_mines():
+                 for  symbol in sentance.known_mines().copy():
+                    self.mark_mine(symbol)
+                    breaker = True
+          breaker = self.knowledge_helper()
+          if(not breaker):
+             break
 
     def make_safe_move(self):
         """
@@ -295,6 +280,6 @@ class MinesweeperAI():
              return None
          i = random.randrange(8)
          j = random.randrange(8)
-         if all(move != (i,j)  for move in self.moves_made) and  all(move != (i,j)  for move in self.mines) :
+         if all(move != (i,j)  for move in self.moves_made) and  all(move != (i,j)  for move in self.mines):
             return (i,j)
 
